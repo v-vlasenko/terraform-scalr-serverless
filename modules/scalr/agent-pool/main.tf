@@ -9,7 +9,7 @@ terraform {
 data "scalr_current_account" "this" {}
 
 data "http" "scalr_allowlist" {
-  url = "https://scalr.io/.well-known/allowlist.txt"
+  url = "https://main.scalr.dev/.well-known/allowlist.txt"
 }
 
 resource "scalr_agent_pool" "webhook" {
