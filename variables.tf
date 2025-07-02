@@ -92,3 +92,15 @@ variable "vpc_name" {
   description = "VPC Network name"
   default = "scalr-agent"
 }
+
+variable "scalr_hostname" {
+  type = string
+  description = "host name of Scalr instance"
+  default = "mainiacp.soltys-test.testenv.scalr.dev"
+}
+
+variable "scalr_token" {
+  type = string
+  description = "Scalr token"
+}
+
