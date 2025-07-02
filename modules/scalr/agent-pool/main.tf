@@ -14,7 +14,7 @@ data "http" "scalr_allowlist" {
 
 resource "scalr_agent_pool" "webhook" {
   name        = var.agent_pool_name
-  account_id  = data.scalr_current_account.this.id
+  account_id  = "acc-svrcncgh453bi8g"
 }
 
 resource "scalr_agent_pool_token" "webhook" {
@@ -23,7 +23,7 @@ resource "scalr_agent_pool_token" "webhook" {
 }
 
 locals {
-  scalr_url = "https://${data.scalr_current_account.this.name}.scalr.io"
+  scalr_url = "https://${var.scalr_hostname}"
   # Split the response by newlines and filter out empty lines
   scalr_ips = [for ip in split("\n", trimspace(data.http.scalr_allowlist.response_body)) : "${ip}/32" if ip != ""]
 }
