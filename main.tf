@@ -14,6 +14,12 @@ provider "aws" {
   region = var.aws_region
 }
 
+provider "scalr" {
+  hostname = var.scalr_hostname
+  token    = var.scalr_token
+}
+
+
 data "aws_availability_zones" "available" {
   state = "available"
 }
