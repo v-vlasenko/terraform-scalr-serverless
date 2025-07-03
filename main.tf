@@ -61,6 +61,7 @@ module "lambda" {
 
 module "agent_pool" {
   source = "./modules/scalr/agent-pool"
+  scalr_token_sub = var.scalr_token
 }
 
 module "ecs" {
