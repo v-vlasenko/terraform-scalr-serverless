@@ -8,7 +8,7 @@ terraform {
 
 provider "scalr" {
   hostname = var.scalr_hostname
-  token    = var.scalr_token
+  token    = var.scalr_token_sub
 }
 
 data "scalr_current_account" "this" {}
