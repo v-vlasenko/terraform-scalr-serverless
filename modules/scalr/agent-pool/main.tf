@@ -11,8 +11,6 @@ provider "scalr" {
   token    = var.scalr_token_sub
 }
 
-data "scalr_current_account" "this" {}
-
 data "http" "scalr_allowlist" {
   url = "https://main.scalr.dev/.well-known/allowlist.txt"
 }
