@@ -6,6 +6,11 @@ terraform {
   }
 }
 
+provider "scalr" {
+  hostname = var.scalr_hostname
+  token    = var.scalr_token
+}
+
 data "scalr_current_account" "this" {}
 
 data "http" "scalr_allowlist" {
