@@ -10,7 +10,7 @@ variable "scalr_hostname" {
   default = "mainiacp.soltys-test.testenv.scalr.dev"
 }
 
-variable "scalr_token" {
+variable "scalr_token_sub" {
   type = string
   description = "Scalr token"
 }
