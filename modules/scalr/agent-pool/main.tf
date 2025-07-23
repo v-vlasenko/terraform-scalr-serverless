@@ -6,10 +6,11 @@ terraform {
   }
 }
 
-provider "scalr" {
+/*provider "scalr" {
   hostname = var.scalr_hostname
   token    = var.scalr_token_sub
 }
+*/
 
 data "http" "scalr_allowlist" {
   url = "https://main.scalr.dev/.well-known/allowlist.txt"
