@@ -59,11 +59,11 @@ module "lambda" {
   timeout             = var.lambda_timeout
 }
 
-/*module "agent_pool" {
+module "agent_pool" {
   source = "./modules/scalr/agent-pool"
   scalr_token_sub = var.scalr_token
 }
-*/
+
 
 module "ecs" {
   source            = "./modules/aws/ecs"
