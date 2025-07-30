@@ -17,7 +17,7 @@ data "http" "scalr_allowlist" {
 
 resource "scalr_agent_pool" "webhook" {
   name        = var.agent_pool_name
-  account_id  = "acc-svrcncgh453bi8g"
+  account_id  = "acc-v0oti4ukf2e876d9r"
 }
 
 resource "scalr_agent_pool_token" "webhook" {
