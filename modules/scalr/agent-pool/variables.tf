@@ -7,7 +7,7 @@ variable "agent_pool_name" {
 variable "scalr_hostname" {
   type = string
   description = "host name of Scalr instance"
-  default = "vlad-gh.vlad-serverless.testenv.scalr.dev"
+  default = "mainiacp.vlad-master.testenv.scalr.dev"
 }
 
 variable "scalr_token_sub" {
