@@ -26,7 +26,7 @@ resource "scalr_agent_pool_token" "webhook" {
 }
 
 locals {
-  scalr_url = "https://vlad-prbug.vlad-serverless.testenv.scalr.dev"
+  scalr_url = "https://mainiacp.vlad-serverless.testenv.scalr.dev"
   # Split the response by newlines and filter out empty lines
   scalr_ips = [for ip in split("\n", trimspace(data.http.scalr_allowlist.response_body)) : "${ip}/32" if ip != ""]
 }
