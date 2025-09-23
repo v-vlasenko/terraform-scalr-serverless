@@ -97,10 +97,10 @@ resource "terraform_data" "configure_agent_pool_serverless" {
       echo "API Gateway URL: ${module.api_gateway.url}"
       echo "Scalr Hostname: ${var.scalr_hostname}"
 
-      # Make the API call to configure serverless
-      curl -X PATCH "https://${var.scalr_hostname}/api/iacp/v3/agent-pools/${module.agent_pool.agent_pool_id}" \
+      # Make the API call using the correct endpoint from OpenAPI spec
+      curl -X PATCH "https://${var.scalr_hostname}/agent-pools/${module.agent_pool.agent_pool_id}" \
         -H "Authorization: Bearer ${var.scalr_token}" \
-        -H "Content-Type: application/json" \
+        -H "Content-Type: application/vnd.api+json" \
         -d '{
           "data": {
             "type": "agent-pools",
