@@ -8,11 +8,3 @@ output "agent_token" {
   value       = scalr_agent_pool_token.webhook.token
   sensitive   = true
 }
-
-output "scalr_url" {
-  value = local.scalr_url
-}
-
-output "allowed_ips" {
-  value = local.scalr_ips
-}

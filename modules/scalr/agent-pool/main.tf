@@ -29,3 +29,11 @@ locals {
   # Split the response by newlines and filter out empty lines
   scalr_ips = [for ip in split("\n", trimspace(data.http.scalr_allowlist.response_body)) : "${ip}/32" if ip != ""]
 }
+
+output "scalr_url" {
+  value = local.scalr_url
+}
+
+output "allowed_ips" {
+  value = local.scalr_ips
+}
