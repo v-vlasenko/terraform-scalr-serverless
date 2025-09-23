@@ -4,9 +4,10 @@
 This project sets up a serverless infrastructure using AWS Lambda, API Gateway, and ECS Fargate. It allows you to trigger Fargate tasks via an API Gateway endpoint secured with an API key.
 
 ## Setup
-1. Create a Workspace in Scalr and configure the following variables in the Workspace:
+1. Create a Workspace in Scalr from this repo and configure the following variables in the Workspace:
    - `scalr_hostname`: The hostname of your Scalr instance (e.g., `your-instance.scalr.dev`)
    - `scalr_token`: Your Scalr API token
+2. Create AWS Provider Configuration and link it to the workspace
 
 2. Apply a run in this workspace
 
