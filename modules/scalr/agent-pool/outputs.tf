@@ -8,3 +8,8 @@ output "agent_token" {
   value       = scalr_agent_pool_token.webhook.token
   sensitive   = true
 }
+
+output "allowed_ips" {
+  description = "List of allowed IPs from Scalr allowlist"
+  value       = local.scalr_ips
+}

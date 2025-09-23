@@ -27,17 +27,6 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-module "api_gateway" {
-  source = "./modules/aws/api-gateway"
-
-  name                   = var.api_gateway_name
-  environment            = var.api_gateway_environment
-  additional_allowed_ips = module.agent_pool.allowed_ips
-  allow_all_ingress      = var.allow_all_ingress
-  lambda_invoke_arn      = module.lambda.invoke_arn
-  lambda_function_name   = module.lambda.function_name
-}
-
 module "networking" {
   source = "./modules/aws/networking"
 
@@ -45,6 +34,12 @@ module "networking" {
   cidr = "10.0.0.0/16"
   azs = slice(data.aws_availability_zones.available.names, 0, 2)
   public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+}
+
+module "agent_pool" {
+  source = "./modules/scalr/agent-pool"
+  scalr_token_sub = var.scalr_token
+  scalr_hostname  = var.scalr_hostname
 }
 
 module "lambda" {
@@ -62,10 +57,15 @@ module "lambda" {
   timeout             = var.lambda_timeout
 }
 
-module "agent_pool" {
-  source = "./modules/scalr/agent-pool"
-  scalr_token_sub = var.scalr_token
-  scalr_hostname  = var.scalr_hostname
+module "api_gateway" {
+  source = "./modules/aws/api-gateway"
+
+  name                   = var.api_gateway_name
+  environment            = var.api_gateway_environment
+  additional_allowed_ips = module.agent_pool.allowed_ips
+  allow_all_ingress      = var.allow_all_ingress
+  lambda_invoke_arn      = module.lambda.invoke_arn
+  lambda_function_name   = module.lambda.function_name
 }
 
 module "ecs" {
@@ -89,8 +89,6 @@ resource "null_resource" "configure_agent_pool_serverless" {
     agent_pool_id   = module.agent_pool.agent_pool_id
     api_gateway_url = module.api_gateway.url
     api_key         = module.api_gateway.api_key
-    scalr_hostname  = var.scalr_hostname
-    scalr_token     = var.scalr_token
   }
 
   provisioner "local-exec" {
@@ -125,3 +123,4 @@ resource "null_resource" "configure_agent_pool_serverless" {
     module.networking
   ]
 }
+

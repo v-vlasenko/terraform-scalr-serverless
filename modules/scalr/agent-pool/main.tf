@@ -17,6 +17,8 @@ data "http" "scalr_allowlist" {
 
 resource "scalr_agent_pool" "webhook" {
   name = var.agent_pool_name
+
+  # Serverless configuration will be added via separate resource to avoid dependency cycles
 }
 
 resource "scalr_agent_pool_token" "webhook" {
@@ -32,8 +34,4 @@ locals {
 
 output "scalr_url" {
   value = local.scalr_url
-}
-
-output "allowed_ips" {
-  value = local.scalr_ips
 }
