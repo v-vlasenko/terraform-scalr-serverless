@@ -96,7 +96,6 @@ variable "vpc_name" {
 variable "scalr_hostname" {
   type = string
   description = "host name of Scalr instance"
-  default = "mainiacp.vlad-serverless.testenv.scalr.dev"
 }
 
 variable "scalr_token" {

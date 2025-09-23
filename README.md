@@ -7,7 +7,8 @@ This project sets up a serverless infrastructure using AWS Lambda, API Gateway, 
 - AWS CLI configured with appropriate credentials
 - Terraform (or OpenTofu) installed
 - Python 3.11 (for Lambda function)
-- Scalr account and API token (if using Scalr backend)
+- Scalr account with Workspace access
+- Scalr API token configured as a workspace variable
 
 ## Setup
 1. Clone the repository:
@@ -16,17 +17,26 @@ This project sets up a serverless infrastructure using AWS Lambda, API Gateway, 
    cd serverless
    ```
 
-2. Initialize Terraform:
+2. Create a Workspace in Scalr and configure the following variables in the Workspace UI:
+   - `scalr_hostname`: The hostname of your Scalr instance (e.g., `your-instance.scalr.dev`)
+   - `scalr_token`: Your Scalr API token (mark as sensitive)
+
+3. Initialize Terraform:
    ```bash
    tofu init
    ```
 
-3. Apply the Terraform configuration:
+4. Apply the Terraform configuration:
    ```bash
    tofu apply -auto-approve
    ```
 
-4. Note the outputs:
+   This will automatically:
+   - Create the AWS infrastructure (API Gateway, Lambda, ECS)
+   - Create the Scalr agent pool
+   - Configure the agent pool as serverless with the API Gateway URL and X-Api-Key header
+
+5. Note the outputs:
    - `webhook_url`: The API Gateway endpoint URL
    - `api_key`: The API key required for authentication
 

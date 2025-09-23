@@ -7,6 +7,9 @@ terraform {
     scalr = {
       source = "scalr/scalr"
     }
+    null = {
+      source = "hashicorp/null"
+    }
   }
 }
 
@@ -55,13 +58,14 @@ module "lambda" {
   handler             = var.lambda_handler
   memory_size         = var.lambda_memory_size
   runtime             = var.lambda_runtime
-  source_file         = "${path.module}/lamdba_function.py"
+  source_file         = "${path.module}/lambda_function.py"
   timeout             = var.lambda_timeout
 }
 
 module "agent_pool" {
   source = "./modules/scalr/agent-pool"
   scalr_token_sub = var.scalr_token
+  scalr_hostname  = var.scalr_hostname
 }
 
 module "ecs" {
@@ -77,4 +81,47 @@ module "ecs" {
   scalr_agent_token = module.agent_pool.agent_token
 
   security_group_name = var.ecs_security_group_name
+}
+
+# Configure the agent pool as serverless after all infrastructure is created
+resource "null_resource" "configure_agent_pool_serverless" {
+  triggers = {
+    agent_pool_id   = module.agent_pool.agent_pool_id
+    api_gateway_url = module.api_gateway.url
+    api_key         = module.api_gateway.api_key
+    scalr_hostname  = var.scalr_hostname
+    scalr_token     = var.scalr_token
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      curl -X PATCH "https://${var.scalr_hostname}/api/iacp/v3/agent-pools/${module.agent_pool.agent_pool_id}" \
+        -H "Authorization: Bearer ${var.scalr_token}" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "data": {
+            "type": "agent-pools",
+            "id": "${module.agent_pool.agent_pool_id}",
+            "attributes": {
+              "api-gateway-url": "${module.api_gateway.url}",
+              "headers": [
+                {
+                  "name": "X-Api-Key",
+                  "value": "${module.api_gateway.api_key}",
+                  "sensitive": true
+                }
+              ]
+            }
+          }
+        }'
+    EOT
+  }
+
+  depends_on = [
+    module.agent_pool,
+    module.api_gateway,
+    module.lambda,
+    module.ecs,
+    module.networking
+  ]
 }
