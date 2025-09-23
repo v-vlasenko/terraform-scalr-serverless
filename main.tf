@@ -66,8 +66,6 @@ module "agent_pool" {
   source = "./modules/scalr/agent-pool"
   scalr_token_sub = var.scalr_token
   scalr_hostname  = var.scalr_hostname
-  api_gateway_url = module.api_gateway.url
-  api_key         = module.api_gateway.api_key
 }
 
 module "ecs" {
@@ -85,3 +83,49 @@ module "ecs" {
   security_group_name = var.ecs_security_group_name
 }
 
+# Configure the agent pool as serverless after all infrastructure is created
+resource "terraform_data" "configure_agent_pool_serverless" {
+  triggers_replace = [
+    module.agent_pool.agent_pool_id,
+    module.api_gateway.url,
+    module.api_gateway.api_key
+  ]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "Configuring agent pool ${module.agent_pool.agent_pool_id} as serverless..."
+      echo "API Gateway URL: ${module.api_gateway.url}"
+      echo "Scalr Hostname: ${var.scalr_hostname}"
+
+      # Make the API call to configure serverless
+      curl -X PATCH "https://${var.scalr_hostname}/api/iacp/v3/agent-pools/${module.agent_pool.agent_pool_id}" \
+        -H "Authorization: Bearer ${var.scalr_token}" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "data": {
+            "type": "agent-pools",
+            "id": "${module.agent_pool.agent_pool_id}",
+            "attributes": {
+              "api-gateway-url": "${module.api_gateway.url}",
+              "headers": [
+                {
+                  "name": "X-Api-Key",
+                  "value": "${module.api_gateway.api_key}",
+                  "sensitive": true
+                }
+              ]
+            }
+          }
+        }' \
+        -s && echo "Agent pool configured successfully" || (echo "Failed to configure agent pool" && exit 1)
+    EOT
+  }
+
+  depends_on = [
+    module.agent_pool,
+    module.api_gateway,
+    module.lambda,
+    module.ecs,
+    module.networking
+  ]
+}

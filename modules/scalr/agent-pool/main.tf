@@ -17,19 +17,6 @@ data "http" "scalr_allowlist" {
 
 resource "scalr_agent_pool" "webhook" {
   name = var.agent_pool_name
-
-  # Only set serverless config if values are provided
-  api_gateway_url = var.api_gateway_url != "" ? var.api_gateway_url : null
-
-  # Only add header if api_key is provided
-  dynamic "header" {
-    for_each = var.api_key != "" ? [1] : []
-    content {
-      name      = "X-Api-Key"
-      value     = var.api_key
-      sensitive = true
-    }
-  }
 }
 
 resource "scalr_agent_pool_token" "webhook" {

@@ -13,16 +13,3 @@ variable "scalr_token_sub" {
   type = string
   description = "Scalr token"
 }
-
-variable "api_gateway_url" {
-  type = string
-  description = "API Gateway URL for webhook"
-  default = ""
-}
-
-variable "api_key" {
-  type = string
-  description = "API key for webhook authentication"
-  default = ""
-  sensitive = true
-}

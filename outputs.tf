@@ -19,14 +19,3 @@ output "api_key" {
   value       = module.api_gateway.api_key
   sensitive   = true
 }
-
-output "agent_pool_api_gateway_url" {
-  description = "API Gateway URL configured for the agent pool serverless operation"
-  value       = module.agent_pool.api_gateway_url
-}
-
-output "agent_pool_webhook_headers" {
-  description = "Headers configured for agent pool webhook authentication"
-  value       = module.agent_pool.webhook_headers
-  sensitive   = true
-}
