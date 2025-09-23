@@ -84,15 +84,16 @@ module "ecs" {
 }
 
 # Configure the agent pool as serverless after all infrastructure is created
-resource "null_resource" "configure_agent_pool_serverless" {
-  triggers = {
-    agent_pool_id   = module.agent_pool.agent_pool_id
-    api_gateway_url = module.api_gateway.url
-    api_key         = module.api_gateway.api_key
-  }
+resource "terraform_data" "configure_agent_pool_serverless" {
+  triggers_replace = [
+    module.agent_pool.agent_pool_id,
+    module.api_gateway.url,
+    module.api_gateway.api_key
+  ]
 
   provisioner "local-exec" {
     command = <<-EOT
+      echo "Configuring agent pool ${module.agent_pool.agent_pool_id} as serverless..."
       curl -X PATCH "https://${var.scalr_hostname}/api/iacp/v3/agent-pools/${module.agent_pool.agent_pool_id}" \
         -H "Authorization: Bearer ${var.scalr_token}" \
         -H "Content-Type: application/json" \
@@ -111,7 +112,8 @@ resource "null_resource" "configure_agent_pool_serverless" {
               ]
             }
           }
-        }'
+        }' \
+        -s && echo "Successfully configured agent pool as serverless" || (echo "Failed to configure agent pool as serverless" && exit 1)
     EOT
   }
 
