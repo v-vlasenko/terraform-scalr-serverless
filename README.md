@@ -34,7 +34,7 @@ This project sets up a serverless infrastructure using AWS Lambda, API Gateway, 
    This will automatically:
    - Create the AWS infrastructure (API Gateway, Lambda, ECS)
    - Create the Scalr agent pool
-   - Configure the agent pool as serverless with the API Gateway URL and X-Api-Key header
+   - Configure the agent pool as serverless with webhook-enabled=true, webhook-url, and webhook-headers
 
 5. Note the outputs:
    - `webhook_url`: The API Gateway endpoint URL

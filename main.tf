@@ -106,8 +106,9 @@ resource "terraform_data" "configure_agent_pool_serverless" {
             "type": "agent-pools",
             "id": "${module.agent_pool.agent_pool_id}",
             "attributes": {
-              "api-gateway-url": "${module.api_gateway.url}",
-              "headers": [
+              "webhook-enabled": true,
+              "webhook-url": "${module.api_gateway.url}",
+              "webhook-headers": [
                 {
                   "name": "X-Api-Key",
                   "value": "${module.api_gateway.api_key}",
