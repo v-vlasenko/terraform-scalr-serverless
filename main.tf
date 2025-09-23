@@ -36,12 +36,6 @@ module "networking" {
   public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
-module "agent_pool" {
-  source = "./modules/scalr/agent-pool"
-  scalr_token_sub = var.scalr_token
-  scalr_hostname  = var.scalr_hostname
-}
-
 module "lambda" {
   source = "./modules/aws/lambda"
 
@@ -62,10 +56,18 @@ module "api_gateway" {
 
   name                   = var.api_gateway_name
   environment            = var.api_gateway_environment
-  additional_allowed_ips = module.agent_pool.allowed_ips
+  additional_allowed_ips = []  # Will be set after agent pool is created
   allow_all_ingress      = var.allow_all_ingress
   lambda_invoke_arn      = module.lambda.invoke_arn
   lambda_function_name   = module.lambda.function_name
+}
+
+module "agent_pool" {
+  source = "./modules/scalr/agent-pool"
+  scalr_token_sub = var.scalr_token
+  scalr_hostname  = var.scalr_hostname
+  api_gateway_url = module.api_gateway.url
+  api_key         = module.api_gateway.api_key
 }
 
 module "ecs" {
@@ -81,48 +83,5 @@ module "ecs" {
   scalr_agent_token = module.agent_pool.agent_token
 
   security_group_name = var.ecs_security_group_name
-}
-
-# Configure the agent pool as serverless after all infrastructure is created
-resource "terraform_data" "configure_agent_pool_serverless" {
-  triggers_replace = [
-    module.agent_pool.agent_pool_id,
-    module.api_gateway.url,
-    module.api_gateway.api_key
-  ]
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo "Configuring agent pool ${module.agent_pool.agent_pool_id} as serverless..."
-      curl -X PATCH "https://${var.scalr_hostname}/api/iacp/v3/agent-pools/${module.agent_pool.agent_pool_id}" \
-        -H "Authorization: Bearer ${var.scalr_token}" \
-        -H "Content-Type: application/json" \
-        -d '{
-          "data": {
-            "type": "agent-pools",
-            "id": "${module.agent_pool.agent_pool_id}",
-            "attributes": {
-              "api-gateway-url": "${module.api_gateway.url}",
-              "headers": [
-                {
-                  "name": "X-Api-Key",
-                  "value": "${module.api_gateway.api_key}",
-                  "sensitive": true
-                }
-              ]
-            }
-          }
-        }' \
-        -s && echo "Successfully configured agent pool as serverless" || (echo "Failed to configure agent pool as serverless" && exit 1)
-    EOT
-  }
-
-  depends_on = [
-    module.agent_pool,
-    module.api_gateway,
-    module.lambda,
-    module.ecs,
-    module.networking
-  ]
 }
 

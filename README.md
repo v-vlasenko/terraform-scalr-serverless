@@ -39,8 +39,6 @@ This project sets up a serverless infrastructure using AWS Lambda, API Gateway, 
 5. Note the outputs:
    - `webhook_url`: The API Gateway endpoint URL
    - `api_key`: The API key required for authentication
-   - `agent_pool_api_gateway_url`: API Gateway URL configured for the agent pool
-   - `agent_pool_webhook_headers`: Headers configured for agent pool webhook authentication
 
 ## Usage
 Trigger the Fargate task by sending a POST request to the API Gateway endpoint with the API key:
